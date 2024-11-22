@@ -45,7 +45,7 @@ const FinancialRecordForm = () => {
           />
         </div>
         <div className="form-field">
-          <label>Amount:</label>
+          <label>Amount: </label>
           <input
             type="number"
             required
