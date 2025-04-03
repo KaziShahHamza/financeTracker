@@ -1,12 +1,12 @@
 import express, { Request, Response } from "express";
-import FinancialRecordModel from "../schema/financial-record";
+import FinancialRecordModel from "../schema/FinancialRecordModel";
 
 const router = express.Router();
 
-router.get("/getAllByUserId/:userId", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId;
-    const records = await FinancialRecordModel.find({ userId: userId });
+    const id = req.params.id;
+    const records = await FinancialRecordModel.find({ userId: id });
 
     if (records.length === 0) {
       return res.status(404).send("No records found");
@@ -41,7 +41,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     );
 
     if (!record) return res.status(404).send();
-    res.status(200).send(record);
+    res.status(200).send("Record updated");
   } catch (err) {
     res.status(500).send(err);
   }
@@ -53,10 +53,10 @@ router.delete("/:id", async (req: Request, res: Response) => {
     const record = await FinancialRecordModel.findByIdAndDelete(id);
 
     if (!record) return res.status(404).send();
-    res.status(200).send(record);
+    res.status(200).send("Record deleted");
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-export default router;
+export {router as FinancialRecordRouter};
