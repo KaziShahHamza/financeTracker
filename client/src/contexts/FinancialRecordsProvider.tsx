@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 
 interface FinancialRecord {
   id?: string;
-  userId: string;
+  userID: string;
   date: Date;
   description: string;
   amount: number;
@@ -30,7 +30,7 @@ export const FinancialRecordsProvider = ({
 
   const addRecord = async (record: FinancialRecord) => {
     console.log("Submitting Record:", record);
-    const response = await fetch("http://localhost:3001/financial-records", {
+    const response = await fetch("http://localhost:3002/records", {
       method: "POST",
       body: JSON.stringify(record),
       headers: {
@@ -39,11 +39,16 @@ export const FinancialRecordsProvider = ({
     });
 
     try {
+      console.log("Entered try");
       if (response.ok) {
         const newRecord = await response.json();
+        console.log("New Record: ", newRecord);
         setRecords((prev) => [...prev, newRecord]);
+      } else {
+        console.log("Response is not OK");
       }
     } catch (err) {
+      console.log("Entered catch");
       console.log(err);
     }
   };
@@ -61,7 +66,7 @@ export const useFinancialRecords = () => {
   );
 
   if (!context) {
-    throw new Error("Error must be in FinancialRecordsType");
+    throw new Error("Error in FinancialRecordsType");
   }
 
   return context;

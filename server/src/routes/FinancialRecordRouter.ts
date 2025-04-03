@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const records = await FinancialRecordModel.find({ userId: id });
+    const records = await FinancialRecordModel.find({ userID: id });
 
     if (records.length === 0) {
       return res.status(404).send("No records found");
@@ -26,7 +26,7 @@ router.post("/", async (req: Request, res: Response) => {
     res.status(200).send(savedRecord);
   } catch (err) {
     res.status(500).send(err);
-    console.log("post e problem");
+    console.log("post problem from server");
   }
 });
 
