@@ -1,5 +1,5 @@
 import "./App.css";
-import Auth from "./pages/auth/auth";
+import Auth from "./pages/auth";
 import Dashboard from "./pages/dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { FinancialRecordsProvider } from "./contexts/FinancialRecordsProvider";

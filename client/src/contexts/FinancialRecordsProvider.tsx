@@ -1,4 +1,6 @@
-import { createContext, useContext, useState } from "react";
+import { useUser } from "@clerk/clerk-react";
+import { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
 interface FinancialRecord {
   id?: string;
@@ -27,28 +29,40 @@ export const FinancialRecordsProvider = ({
   children: React.ReactNode;
 }) => {
   const [records, setRecords] = useState<FinancialRecord[]>([]);
+  const { user } = useUser();
+  
+  const fetchRecords = async () => {
+    if (!user) return;
+    try {
+      const response = await axios.get(
+        "http://localhost:3002/records/" + user?.id
+      );
+      console.log("Response data: ", response.data);
+      setRecords(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecords();
+  }, [user]);
 
   const addRecord = async (record: FinancialRecord) => {
-    console.log("Submitting Record:", record);
-    const response = await fetch("http://localhost:3002/records", {
-      method: "POST",
-      body: JSON.stringify(record),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
     try {
-      console.log("Entered try");
-      if (response.ok) {
-        const newRecord = await response.json();
-        console.log("New Record: ", newRecord);
-        setRecords((prev) => [...prev, newRecord]);
-      } else {
-        console.log("Response is not OK");
-      }
+      const response = await axios.post(
+        "http://localhost:3002/records",
+        record,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Adding Data: ", response.data);
+      setRecords((prev) => [...prev, response.data]);
     } catch (err) {
-      console.log("Entered catch");
       console.log(err);
     }
   };
