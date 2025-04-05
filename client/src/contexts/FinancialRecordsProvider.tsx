@@ -2,8 +2,8 @@ import { useUser } from "@clerk/clerk-react";
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
-interface FinancialRecord {
-  id?: string;
+export interface FinancialRecord {
+  _id?: string;
   userID: string;
   date: Date;
   description: string;
@@ -15,8 +15,8 @@ interface FinancialRecord {
 interface FinancialRecordsContextType {
   records: FinancialRecord[];
   addRecord: (record: FinancialRecord) => void;
-  //   updateRecord: (id: string, newRecord: FinancialRecord) => void;
-  //   deleteRecord: (id: string) => void;
+  updateRecord: (id: string, newRecord: FinancialRecord) => void;
+  deleteRecord: (id: string) => void;
 }
 
 export const FinancialRecordsContext = createContext<
@@ -30,7 +30,7 @@ export const FinancialRecordsProvider = ({
 }) => {
   const [records, setRecords] = useState<FinancialRecord[]>([]);
   const { user } = useUser();
-  
+
   const fetchRecords = async () => {
     if (!user) return;
     try {
@@ -67,8 +67,44 @@ export const FinancialRecordsProvider = ({
     }
   };
 
+  const updateRecord = async (id: string, newRecord: FinancialRecord) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3002/records/${id}`,
+        newRecord,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setRecords((prev) =>
+        prev.map((record) => (record._id === id ? response.data : record))
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteRecord = async (id: string) => {
+    try {
+    const { data: deletedRecord } = await axios.delete(
+      `http://localhost:3002/records/${id}`
+    );
+
+    setRecords((prev) =>
+      prev.filter((record) => record._id !== deletedRecord._id)
+    );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <FinancialRecordsContext.Provider value={{ records, addRecord }}>
+    <FinancialRecordsContext.Provider
+      value={{ records, addRecord, updateRecord, deleteRecord }}
+    >
       {children}
     </FinancialRecordsContext.Provider>
   );

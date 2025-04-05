@@ -40,8 +40,11 @@ router.put("/:id", async (req: Request, res: Response) => {
       { new: true }
     );
 
-    if (!record) return res.status(404).send();
-    res.status(200).send("Record updated");
+    if (!record)  {
+      console.log("Record not found");
+      return res.status(404).send();
+    }
+    res.status(200).send(record);
   } catch (err) {
     res.status(500).send(err);
   }
@@ -52,8 +55,10 @@ router.delete("/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
     const record = await FinancialRecordModel.findByIdAndDelete(id);
 
-    if (!record) return res.status(404).send();
-    res.status(200).send("Record deleted");
+    if (!record)  {
+      return res.status(404).send();
+    }
+    res.status(200).send(record);
   } catch (err) {
     res.status(500).send(err);
   }
